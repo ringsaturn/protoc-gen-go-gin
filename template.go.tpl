@@ -25,12 +25,19 @@ type {{$.Name}} struct{
 // Resp 返回值
 type default{{$.Name}}Resp struct {}
 
-func (resp default{{$.Name}}Resp) response(ctx *gin.Context, status, code int, msg string, data interface{}) {
-	ctx.JSON(status, map[string]interface{}{
-		"code": code, 
-		"msg": msg,
-		"data": data,
-	})
+func (resp default{{$.Name}}Resp) response(ctx *gin.Context, httpStatus, code int, msg string, data interface{}) {
+	switch httpStatus {
+	case 200:
+		ctx.JSON(httpStatus, data)
+	case 304:
+		ctx.String(httpStatus, msg)
+	default:
+		ctx.JSON(httpStatus, map[string]interface{}{
+			"code": code,
+			"msg":  msg,
+			"data": data,
+		})
+	}
 }
 
 // Error 返回错误信息
